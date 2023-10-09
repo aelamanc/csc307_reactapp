@@ -137,8 +137,8 @@ app.get('/users/:id', (req, res) => {
         });
 
 app.post('/users', (req, res) => {
-    const userToAdd = req.body;
     const userId = generateRandomId();
+    const userToAdd = req.body;
     userToAdd.id = userId;
     addUser(userToAdd);
     res.status(201).json(userToAdd);
@@ -149,7 +149,7 @@ app.delete('/users/:id', (req, res) => {
     const userDeleted = deleteUserById(id);
 
     if (userDeleted) {
-        res.send(`User with ID ${id} has been deleted.`);
+        res.status(204).json(userDeleted);
     } else {
         res.status(404).send('User not found.');
     }

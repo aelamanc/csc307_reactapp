@@ -5,7 +5,7 @@ import Form from "./Form";
 function MyApp() {
   const [characters, setCharacters] = useState([]);
 
-  function fetchUsers(){
+  function fetchUsers() {
     const promise = fetch("http://localhost:8000/users");
     return promise;
   }
@@ -28,31 +28,37 @@ function MyApp() {
     });
     setCharacters(updated)
   }
-
-  // function updateList(person){
-  //   setCharacters([...characters, person]);
-  // }
-
-  function updateList(person) { 
+ 
+ 
+  function updateList(person) {
     postUser(person)
-      .then(() => setCharacters([...characters, person]))
+      .then((response) => {
+        if (response.status === 201) {
+          response.json().then((newUser) => {
+            setCharacters([...characters, newUser]);
+          });
+        } else {
+          console.error("Cannot add user");
+        }
+      })
       .catch((error) => {
-      console.log(error);
-    })
-}
+        console.error(error);
+      });
+  }
 
   useEffect(() => {
     fetchUsers()
       .then((res) => res.json())
       .then((json) => setCharacters(json["users_list"]))
-      .catch((error) => { console.log(error); });
-  }, [] );
+      .catch((error) => {
+        console.log(error);
+      });
+  }, []);
 
   return (
     <div className="container">
-      <Table characterData={characters} 
-              removeCharacter ={removeOneCharacter}/>
-      <Form handleSubmit = {updateList}/>
+      <Table characterData={characters} removeCharacter={removeOneCharacter} />
+      <Form handleSubmit={updateList} />
     </div>
   );
 }

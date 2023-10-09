@@ -106,6 +106,9 @@ const deleteUserById = (id) => {
 // app.get('/users', (req, res) => {
 //     res.send(users);
 // });
+app.get("/", (req, res) => {
+    res.send("Hello World!");
+  });
 
 app.get('/users', (req, res) => {
     const name = req.query.name;

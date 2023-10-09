@@ -42,6 +42,17 @@ const users = {
 //         .filter( (user) => user['name'] === name); 
 // }
 
+const generateRandomId = () => {
+    const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let id = '';
+    for (let i = 0; i < 6; i++) {
+      const randomIndex = Math.floor(Math.random() * characters.length);
+      id += characters.charAt(randomIndex);
+    }
+    return id;
+  };
+  
+
 const findUserById = (id) =>
     users['users_list']
         .find( (user) => user['id'] === id);
@@ -100,23 +111,15 @@ app.get('/users', (req, res) => {
     const name = req.query.name;
     const job = req.query.job;
 
-    if (!name && !job) {
-        res.send(users);
+    const filteredUsers = findUsersByNameAndJob(name, job);
+
+    if (filteredUsers.length > 0) {
+        res.send({ users_list: filteredUsers });
     } else {
-        let filteredUsers = users['users_list'];
-        if (name) {
-            filteredUsers = filteredUsers.filter((user) => user.name === name);
-        }
-        if (job) {
-            filteredUsers = filteredUsers.filter((user) => user.job === job);
-        }
-        if (filteredUsers.length > 0) {
-            res.send({ users_list: filteredUsers });
-        } else {
-            res.status(404).send('No users found.');
-        }
+        res.status(404).send('No users found.');
     }
 });
+
 
 
 
@@ -132,8 +135,10 @@ app.get('/users/:id', (req, res) => {
 
 app.post('/users', (req, res) => {
     const userToAdd = req.body;
+    const userId = generateRandomId();
+    userToAdd.id = userId;
     addUser(userToAdd);
-    res.send();
+    res.status(201).json(userToAdd);
 });
 
 app.delete('/users/:id', (req, res) => {
